@@ -1,304 +1,213 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-    <title>GHOSTY PREMIUM | IMG TO URL</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Syncopate:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
-    <style>
-        :root {
-            --bg: #000000;
-            --ghost-blue: #00f2ff;
-            --shining-shadow: 0 0 15px rgba(0, 242, 255, 0.8), 0 0 30px rgba(0, 242, 255, 0.4);
-            --glass: rgba(255, 255, 255, 0.01);
-        }
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>GHOSTY PREMIUM | IMG TO URL</title>
 
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Syncopate:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
 
-        body {
-            background-color: var(--bg);
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            overflow-x: hidden;
-        }
+<style>
+:root{
+--bg:#000;
+--ghost:#00f2ff;
+--shadow:0 0 15px rgba(0,242,255,.8),0 0 30px rgba(0,242,255,.4);
+}
 
-        #rainCanvas {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1;
-            opacity: 0.3;
-        }
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Inter',sans-serif}
 
-        .container {
-            width: 100%;
-            max-width: 480px;
-            padding: 50px 20px;
-            z-index: 1;
-        }
+body{
+background:var(--bg);
+color:#fff;
+min-height:100vh;
+display:flex;
+justify-content:center;
+}
 
-        header { text-align: center; margin-bottom: 40px; }
+canvas{
+position:fixed;
+inset:0;
+z-index:-1;
+opacity:.3
+}
 
-        .ghost-icon {
-            font-size: 3rem;
-            color: var(--ghost-blue);
-            filter: drop-shadow(0 0 20px var(--ghost-blue));
-            animation: float 3s ease-in-out infinite;
-            margin-bottom: 10px;
-        }
+.container{
+max-width:480px;
+width:100%;
+padding:50px 20px
+}
 
-        .logo {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 3.5rem;
-            font-weight: 900;
-            letter-spacing: 15px;
-            color: white;
-            text-transform: uppercase;
-            text-shadow: var(--shining-shadow);
-            animation: pulse 2s infinite alternate;
-        }
+header{text-align:center;margin-bottom:40px}
 
-        @keyframes float { 0%, 100% { transform: translateY(0); opacity: 0.7; } 50% { transform: translateY(-15px); opacity: 1; } }
-        @keyframes pulse { from { opacity: 0.8; } to { opacity: 1; transform: scale(1.02); } }
+.logo{
+font-family:'Orbitron';
+font-size:3.5rem;
+letter-spacing:15px;
+text-shadow:var(--shadow)
+}
 
-        .premium-card {
-            background: var(--glass);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(0, 242, 255, 0.3);
-            border-radius: 40px;
-            padding: 35px;
-            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
-            margin-bottom: 30px;
-        }
+.premium-card{
+background:rgba(255,255,255,.02);
+border:1px solid rgba(0,242,255,.3);
+border-radius:40px;
+padding:35px;
+box-shadow:0 0 40px #000
+}
 
-        .upload-zone {
-            border: 2px solid var(--ghost-blue);
-            border-radius: 25px;
-            padding: 50px 20px;
-            text-align: center;
-            cursor: pointer;
-            background: rgba(0, 0, 0, 0.6);
-            box-shadow: inset 0 0 25px rgba(0, 242, 255, 0.2);
-            transition: 0.4s;
-        }
+.upload-zone{
+border:2px solid var(--ghost);
+border-radius:25px;
+padding:50px 20px;
+text-align:center;
+cursor:pointer;
+box-shadow:inset 0 0 20px rgba(0,242,255,.2)
+}
 
-        .upload-zone:hover { box-shadow: 0 0 20px var(--ghost-blue); transform: scale(1.02); }
+.upload-zone:hover{
+box-shadow:0 0 25px var(--ghost)
+}
 
-        .shining-blue-text {
-            color: var(--ghost-blue);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px var(--ghost-blue);
-        }
+.btn{
+margin-top:25px;
+width:100%;
+padding:20px;
+border:none;
+border-radius:18px;
+font-family:'Syncopate';
+background:linear-gradient(90deg,#002222,var(--ghost),#002222);
+background-size:200%;
+animation:shine 3s linear infinite;
+color:#fff;
+cursor:pointer;
+box-shadow:0 0 25px rgba(0,242,255,.6)
+}
 
-        .btn-main {
-            width: 100%;
-            margin-top: 30px;
-            padding: 22px;
-            border: none;
-            border-radius: 20px;
-            font-family: 'Syncopate', sans-serif;
-            font-weight: 700;
-            color: white;
-            cursor: pointer;
-            background: linear-gradient(90deg, #002222, var(--ghost-blue), #002222);
-            background-size: 200% auto;
-            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
-            animation: moveShine 3s linear infinite;
-        }
+@keyframes shine{
+0%{background-position:0%}
+100%{background-position:200%}
+}
 
-        @keyframes moveShine { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+.result{display:none;margin-top:20px}
 
-        /* HISTORY SECTION */
-        .history-box {
-            width: 100%;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 25px;
-            padding: 20px;
-            border: 1px solid rgba(0, 242, 255, 0.1);
-        }
+.link-box{
+background:#000;
+border:1px solid var(--ghost);
+padding:15px;
+border-radius:12px;
+display:flex;
+justify-content:space-between;
+align-items:center
+}
 
-        .history-title {
-            font-size: 0.7rem;
-            letter-spacing: 4px;
-            color: var(--ghost-blue);
-            text-align: center;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            text-shadow: 0 0 5px var(--ghost-blue);
-        }
+.copy{
+background:#fff;
+color:#000;
+border:none;
+padding:8px 12px;
+border-radius:6px;
+font-weight:900;
+cursor:pointer
+}
 
-        .history-item {
-            background: #000;
-            border: 1px solid rgba(0, 242, 255, 0.2);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            animation: fadeIn 0.5s ease;
-        }
+/* WHATSAPP BUTTON */
+.whatsapp-btn{
+position:fixed;
+bottom:25px;
+right:25px;
+width:60px;
+height:60px;
+border-radius:50%;
+background:#25D366;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:32px;
+color:#fff;
+text-decoration:none;
+box-shadow:0 0 25px #25D366;
+z-index:999;
+transition:.3s
+}
 
-        .history-link {
-            color: var(--ghost-blue);
-            font-size: 0.75rem;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: 70%;
-            text-decoration: none;
-        }
-
-        .mini-copy {
-            background: var(--ghost-blue);
-            color: #000;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.6rem;
-            font-weight: 900;
-            cursor: pointer;
-        }
-
-        /* UPLOADER ELEMENTS */
-        .result-box { display: none; margin-top: 30px; }
-        .link-bar {
-            background: #000;
-            padding: 18px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border: 1px solid var(--ghost-blue);
-        }
-        #urlText { color: var(--ghost-blue); font-family: monospace; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .copy-btn { background: white; color: black; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 900; cursor: pointer; }
-        .loader { display: none; margin: 20px auto; width: 40px; height: 40px; border: 4px solid rgba(0, 242, 255, 0.1); border-top: 4px solid var(--ghost-blue); border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        footer { margin-top: 40px; padding: 25px; text-align: center; font-size: 0.7rem; color: var(--ghost-blue); letter-spacing: 8px; opacity: 0.5; }
-    </style>
+.whatsapp-btn:hover{
+transform:scale(1.1);
+box-shadow:0 0 40px #25D366
+}
+</style>
 </head>
+
 <body>
 
-    <canvas id="rainCanvas"></canvas>
+<canvas id="rain"></canvas>
 
-    <div class="container">
-        <header>
-            <i class="fas fa-ghost ghost-icon"></i>
-            <div class="logo">GHOSTY</div>
-            <p style="font-size: 0.6rem; letter-spacing: 5px; margin-top: 10px; color: white;">PREMIUM SHINING LOG</p>
-        </header>
+<div class="container">
+<header>
+<i class="fa-solid fa-ghost" style="font-size:3rem;color:#00f2ff"></i>
+<div class="logo">GHOSTY</div>
+<p style="font-size:.6rem;letter-spacing:5px">PREMIUM SHINING LOG</p>
+</header>
 
-        <div class="premium-card">
-            <div class="upload-zone" id="dropArea">
-                <i class="fas fa-file-export" style="color: white; font-size: 2.5rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px var(--ghost-blue));"></i>
-                <h2 class="shining-blue-text" id="fileLabel">Upload Image</h2>
-                <input type="file" id="fileInput" hidden accept="image/*">
-            </div>
+<div class="premium-card">
+<div class="upload-zone" onclick="file.click()">
+<i class="fa-solid fa-file-arrow-up" style="font-size:2.5rem"></i>
+<h3 style="color:#00f2ff;letter-spacing:3px;margin-top:10px">UPLOAD IMAGE</h3>
+<input type="file" id="file" hidden accept="image/*">
+</div>
 
-            <div class="loader" id="spinner"></div>
-            <button class="btn-main" id="goBtn">GET LINK</button>
+<button class="btn" onclick="upload()">GET LINK</button>
 
-            <div class="result-box" id="resultBox">
-                <div class="link-bar">
-                    <span id="urlText"></span>
-                    <button class="copy-btn" id="copyBtn">COPY</button>
-                </div>
-                <button onclick="location.reload()" style="background:none; border:none; color:#444; width:100%; margin-top:20px; cursor:pointer; font-size:0.75rem;">NEW SUMMON</button>
-            </div>
-        </div>
+<div class="result" id="result">
+<div class="link-box">
+<span id="url" style="color:#00f2ff;font-family:monospace"></span>
+<button class="copy" onclick="copy()">COPY</button>
+</div>
+</div>
+</div>
+</div>
 
-        <div class="history-box">
-            <div class="history-title">Recent History</div>
-            <div id="historyList"></div>
-            <button onclick="clearHistory()" style="background:none; border:none; color:#ff4d4d; font-size:0.6rem; margin-top:10px; cursor:pointer; width:100%; letter-spacing: 2px;">WIPE ALL DATA</button>
-        </div>
+<!-- WHATSAPP GROUP LINK -->
+<a class="whatsapp-btn"
+href="https://chat.whatsapp.com/EgWhLVkLTheJ51RH4WIpOs?mode=gi_t"
+target="_blank"
+title="Join WhatsApp Group">
+<i class="fa-brands fa-whatsapp"></i>
+</a>
 
-        <footer>GHOSTY PREMIUM</footer>
-    </div>
+<script>
+const KEY="Ed019955ccdfc5952b136e449d727e0b";
 
-    <script>
-        const KEY = 'Ed019955ccdfc5952b136e449d727e0b';
-        const fileInput = document.getElementById('fileInput');
-        const historyList = document.getElementById('historyList');
+async function upload(){
+if(!file.files[0])return;
+const fd=new FormData();
+fd.append("image",file.files[0]);
+const res=await fetch(`https://api.imgbb.com/1/upload?key=${KEY}`,{method:"POST",body:fd});
+const data=await res.json();
+url.innerText=data.data.url;
+result.style.display="block";
+}
 
-        // RAIN BACKGROUND
-        const canvas = document.getElementById('rainCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-        const drops = Array(Math.floor(canvas.width / 16)).fill(1);
-        function draw() {
-            ctx.fillStyle = "rgba(0,0,0,0.15)"; ctx.fillRect(0,0,canvas.width,canvas.height);
-            ctx.fillStyle = "#00f2ff"; ctx.font = "16px monospace";
-            drops.forEach((y, x) => {
-                ctx.fillText(Math.floor(Math.random()*2), x*16, y*16);
-                if(y*16 > canvas.height && Math.random() > 0.975) drops[x] = 0;
-                drops[x]++;
-            });
-        }
-        setInterval(draw, 35);
+function copy(){
+navigator.clipboard.writeText(url.innerText);
+alert("Copied");
+}
 
-        // HISTORY LOGIC
-        function saveToHistory(url) {
-            let history = JSON.parse(localStorage.getItem('ghosty_history') || '[]');
-            history.unshift(url);
-            if(history.length > 5) history.pop();
-            localStorage.setItem('ghosty_history', JSON.stringify(history));
-            renderHistory();
-        }
+/* MATRIX RAIN */
+const c=document.getElementById("rain"),x=c.getContext("2d");
+c.width=innerWidth;c.height=innerHeight;
+let drops=Array(Math.floor(c.width/20)).fill(1);
+setInterval(()=>{
+x.fillStyle="rgba(0,0,0,.15)";
+x.fillRect(0,0,c.width,c.height);
+x.fillStyle="#00f2ff";
+x.font="15px monospace";
+drops.forEach((y,i)=>{
+x.fillText(Math.random()>0.5?1:0,i*20,y*20);
+if(y*20>c.height&&Math.random()>0.98)drops[i]=0;
+drops[i]++;
+});
+},35);
+</script>
 
-        function renderHistory() {
-            let history = JSON.parse(localStorage.getItem('ghosty_history') || '[]');
-            historyList.innerHTML = history.map(url => `
-                <div class="history-item">
-                    <a href="${url}" target="_blank" class="history-link">${url}</a>
-                    <button class="mini-copy" onclick="copyText('${url}')">COPY</button>
-                </div>
-            `).join('');
-        }
-
-        function copyText(text) {
-            navigator.clipboard.writeText(text);
-            alert("Copied to clipboard!");
-        }
-
-        function clearHistory() {
-            localStorage.removeItem('ghosty_history');
-            renderHistory();
-        }
-
-        // UPLOADER
-        document.getElementById('dropArea').onclick = () => fileInput.click();
-        document.getElementById('goBtn').onclick = async () => {
-            if(!fileInput.files[0]) return;
-            document.getElementById('goBtn').style.display='none';
-            document.getElementById('spinner').style.display='block';
-            const fd = new FormData(); fd.append('image', fileInput.files[0]);
-            try {
-                const res = await fetch(`https://api.imgbb.com/1/upload?key=${KEY}`, {method:'POST', body:fd});
-                const data = await res.json();
-                if(data.success) {
-                    const url = data.data.url;
-                    document.getElementById('urlText').innerText = url;
-                    document.getElementById('spinner').style.display='none';
-                    document.getElementById('resultBox').style.display='block';
-                    saveToHistory(url);
-                }
-            } catch(e) { location.reload(); }
-        };
-
-        document.getElementById('copyBtn').onclick = () => {
-            copyText(document.getElementById('urlText').innerText);
-        };
-
-        window.onload = renderHistory;
-    </script>
 </body>
 </html>
