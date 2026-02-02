@@ -1,949 +1,304 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Multi YouTube Player - OLD-STUDIO</title>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>GHOSTY PREMIUM | IMG TO URL</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@900&family=Syncopate:wght@700&family=Inter:wght@400;700&display=swap" rel="stylesheet"/>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg: #000000;
+            --ghost-blue: #00f2ff;
+            --shining-shadow: 0 0 15px rgba(0, 242, 255, 0.8), 0 0 30px rgba(0, 242, 255, 0.4);
+            --glass: rgba(255, 255, 255, 0.01);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
         body {
-            font-family: 'Rajdhani', sans-serif;
-            background: #0a0a0a;
-            background-image: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+            background-color: var(--bg);
+            color: white;
             min-height: 100vh;
-            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             overflow-x: hidden;
         }
 
-        .cyber-grid {
+        #rainCanvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 30px 30px;
-            pointer-events: none;
+            top: 0; left: 0; width: 100%; height: 100%;
             z-index: -1;
+            opacity: 0.3;
         }
 
         .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 15px;
-            position: relative;
+            width: 100%;
+            max-width: 480px;
+            padding: 50px 20px;
             z-index: 1;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            position: relative;
-        }
+        header { text-align: center; margin-bottom: 40px; }
 
-        .header::before {
-            content: '';
-            position: absolute;
-            top: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 150px;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #00ffff, transparent);
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .header h1 {
-            font-family: 'Orbitron', monospace;
-            font-size: 2.2rem;
-            font-weight: 900;
+        .ghost-icon {
+            font-size: 3rem;
+            color: var(--ghost-blue);
+            filter: drop-shadow(0 0 20px var(--ghost-blue));
+            animation: float 3s ease-in-out infinite;
             margin-bottom: 10px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: linear-gradient(45deg, #00ffff, #ff00ff, #ffff00, #00ffff);
-            background-size: 400% 400%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 3s ease-in-out infinite;
-            text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
-            position: relative;
         }
 
-        .header h1::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-            animation: shine 3s ease-in-out infinite;
-        }
-
-        .header p {
-            font-size: 1rem;
-            font-weight: 300;
-            color: #b0b0b0;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .control-panel {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(0, 255, 255, 0.3);
-            box-shadow: 
-                0 0 30px rgba(0, 255, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .control-panel::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.1), transparent);
-            animation: scan 4s ease-in-out infinite;
-        }
-
-        .input-section {
-            margin-bottom: 20px;
-            position: relative;
-        }
-
-        .input-section label {
-            display: block;
-            font-family: 'Orbitron', monospace;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-            color: #00ffff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .url-input {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 1rem;
-            font-family: 'Rajdhani', sans-serif;
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            border-radius: 12px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #ffffff;
-            outline: none;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-        }
-
-        .url-input:focus {
-            border-color: #00ffff;
-            box-shadow: 
-                0 0 15px rgba(0, 255, 255, 0.3),
-                inset 0 0 15px rgba(0, 255, 255, 0.1);
-            transform: translateY(-1px);
-        }
-
-        .url-input::placeholder {
-            color: #666;
-            font-style: italic;
-        }
-
-        .selector-section {
-            margin-bottom: 20px;
-        }
-
-        .selector-section label {
-            display: block;
-            font-family: 'Orbitron', monospace;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-bottom: 15px;
-            color: #ff00ff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .video-count-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .count-btn {
-            padding: 12px 8px;
-            border: 2px solid rgba(255, 0, 255, 0.3);
-            border-radius: 10px;
-            background: rgba(0, 0, 0, 0.6);
-            color: #ffffff;
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: 'Orbitron', monospace;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
-        }
-
-        .count-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 0, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .count-btn:hover {
-            border-color: #ff00ff;
-            color: #ff00ff;
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .count-btn:hover::before {
-            left: 100%;
-        }
-
-        .count-btn.active {
-            background: linear-gradient(45deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
-            border-color: #00ffff;
-            color: #00ffff;
-            box-shadow: 
-                0 0 20px rgba(0, 255, 255, 0.4),
-                inset 0 0 15px rgba(255, 0, 255, 0.1);
-        }
-
-        .button-group {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .start-btn, .control-btn {
-            width: 100%;
-            padding: 18px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            font-family: 'Orbitron', monospace;
-            border: 2px solid;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .start-btn {
-            border-color: #ffff00;
-            background: linear-gradient(45deg, rgba(255, 255, 0, 0.1), rgba(255, 0, 255, 0.1));
-            color: #ffff00;
-        }
-
-        .control-btn.play-all {
-            border-color: #00ff00;
-            background: linear-gradient(45deg, rgba(0, 255, 0, 0.1), rgba(0, 255, 255, 0.1));
-            color: #00ff00;
-        }
-
-        .control-btn.stop-all {
-            border-color: #ff0040;
-            background: linear-gradient(45deg, rgba(255, 0, 64, 0.1), rgba(255, 0, 255, 0.1));
-            color: #ff0040;
-        }
-
-        .start-btn::before, .control-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .start-btn:hover {
-            background: linear-gradient(45deg, rgba(255, 255, 0, 0.2), rgba(255, 0, 255, 0.2));
-            box-shadow: 0 0 25px rgba(255, 255, 0, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .control-btn.play-all:hover {
-            background: linear-gradient(45deg, rgba(0, 255, 0, 0.2), rgba(0, 255, 255, 0.2));
-            box-shadow: 0 0 25px rgba(0, 255, 0, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .control-btn.stop-all:hover {
-            background: linear-gradient(45deg, rgba(255, 0, 64, 0.2), rgba(255, 0, 255, 0.2));
-            box-shadow: 0 0 25px rgba(255, 0, 64, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .start-btn:hover::before, .control-btn:hover::before {
-            left: 100%;
-        }
-
-        .start-btn:disabled, .control-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .video-controls {
-            display: none;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .video-controls.show {
-            display: grid;
-        }
-
-        .video-grid {
-            display: grid;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .video-grid.grid-4 { grid-template-columns: repeat(2, 1fr); }
-        .video-grid.grid-6 { grid-template-columns: repeat(2, 1fr); }
-        .video-grid.grid-8 { grid-template-columns: repeat(2, 1fr); }
-        .video-grid.grid-10 { grid-template-columns: repeat(2, 1fr); }
-        .video-grid.grid-12 { grid-template-columns: repeat(2, 1fr); }
-        .video-grid.grid-14 { grid-template-columns: repeat(2, 1fr); }
-        .video-grid.grid-16 { grid-template-columns: repeat(2, 1fr); }
-        .video-grid.grid-18 { grid-template-columns: repeat(2, 1fr); }
-        .video-grid.grid-20 { grid-template-columns: repeat(2, 1fr); }
-
-        .video-container {
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 12px;
-            overflow: hidden;
-            aspect-ratio: 16/9;
-            border: 2px solid rgba(0, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .video-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 12px;
-            background: linear-gradient(45deg, transparent, rgba(0, 255, 255, 0.1), transparent);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-        }
-
-        .video-container:hover {
-            transform: scale(1.02);
-            border-color: #00ffff;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-        }
-
-        .video-container:hover::before {
-            opacity: 1;
-        }
-
-        .video-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding: 25px;
-            background: rgba(0, 0, 0, 0.8);
-            border-radius: 15px;
-            border: 1px solid rgba(255, 0, 255, 0.3);
-            backdrop-filter: blur(20px);
-            position: relative;
-        }
-
-        .footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 15px;
-            background: linear-gradient(45deg, rgba(255, 0, 255, 0.05), rgba(0, 255, 255, 0.05));
-            pointer-events: none;
-        }
-
-        .branding {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.5rem;
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5rem;
             font-weight: 900;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradientShift 2s ease-in-out infinite;
-        }
-
-        .whatsapp-link {
-            display: inline-block;
-            padding: 12px 25px;
-            background: linear-gradient(45deg, #25D366, #128C7E);
+            letter-spacing: 15px;
             color: white;
-            text-decoration: none;
+            text-transform: uppercase;
+            text-shadow: var(--shining-shadow);
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes float { 0%, 100% { transform: translateY(0); opacity: 0.7; } 50% { transform: translateY(-15px); opacity: 1; } }
+        @keyframes pulse { from { opacity: 0.8; } to { opacity: 1; transform: scale(1.02); } }
+
+        .premium-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 242, 255, 0.3);
+            border-radius: 40px;
+            padding: 35px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 1);
+            margin-bottom: 30px;
+        }
+
+        .upload-zone {
+            border: 2px solid var(--ghost-blue);
             border-radius: 25px;
-            font-weight: 600;
-            font-family: 'Orbitron', monospace;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            border: 2px solid rgba(37, 211, 102, 0.3);
-            position: relative;
-            overflow: hidden;
-            font-size: 0.9rem;
-        }
-
-        .whatsapp-link::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .whatsapp-link:hover {
-            background: linear-gradient(45deg, #128C7E, #25D366);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(37, 211, 102, 0.4);
-            border-color: #25D366;
-        }
-
-        .whatsapp-link:hover::before {
-            left: 100%;
-        }
-
-        .error-message {
-            background: rgba(255, 0, 0, 0.1);
-            border: 2px solid #ff0040;
-            color: #ff0040;
-            padding: 15px;
-            border-radius: 12px;
-            margin-top: 15px;
-            display: none;
-            font-family: 'Orbitron', monospace;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.9rem;
-        }
-
-        .loading {
+            padding: 50px 20px;
             text-align: center;
-            padding: 25px;
-            font-size: 1.1rem;
-            font-family: 'Orbitron', monospace;
-            color: #00ffff;
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.6);
+            box-shadow: inset 0 0 25px rgba(0, 242, 255, 0.2);
+            transition: 0.4s;
+        }
+
+        .upload-zone:hover { box-shadow: 0 0 20px var(--ghost-blue); transform: scale(1.02); }
+
+        .shining-blue-text {
+            color: var(--ghost-blue);
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--ghost-blue);
         }
 
-        .spinner {
-            border: 3px solid rgba(0, 255, 255, 0.1);
-            border-radius: 50%;
-            border-top: 3px solid #00ffff;
-            width: 35px;
-            height: 35px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 12px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-
-        @keyframes shine {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        @keyframes scan {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* Mobile Optimizations */
-        @media (max-width: 768px) {
-            .container {
-                padding: 10px;
-            }
-
-            .header h1 {
-                font-size: 1.8rem;
-                letter-spacing: 1px;
-            }
-
-            .header p {
-                font-size: 0.9rem;
-            }
-
-            .control-panel {
-                padding: 15px;
-            }
-
-            .video-count-buttons {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
-            }
-
-            .count-btn {
-                padding: 10px 6px;
-                font-size: 0.9rem;
-            }
-
-            .start-btn, .control-btn {
-                padding: 15px;
-                font-size: 1rem;
-            }
-
-            .video-grid.grid-4,
-            .video-grid.grid-6,
-            .video-grid.grid-8,
-            .video-grid.grid-10,
-            .video-grid.grid-12,
-            .video-grid.grid-14,
-            .video-grid.grid-16,
-            .video-grid.grid-18,
-            .video-grid.grid-20 {
-                grid-template-columns: 1fr;
-            }
-
-            .branding {
-                font-size: 1.2rem;
-            }
-
-            .whatsapp-link {
-                font-size: 0.8rem;
-                padding: 10px 20px;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .video-count-buttons {
-                grid-template-columns: repeat(5, 1fr);
-            }
-
-            .button-group {
-                grid-template-columns: 1fr 1fr 1fr;
-            }
-
-            .video-controls {
-                grid-template-columns: 1fr 1fr;
-            }
-
-            .video-grid.grid-6 { grid-template-columns: repeat(3, 1fr); }
-            .video-grid.grid-8 { grid-template-columns: repeat(4, 1fr); }
-            .video-grid.grid-10 { grid-template-columns: repeat(5, 1fr); }
-            .video-grid.grid-12 { grid-template-columns: repeat(4, 1fr); }
-            .video-grid.grid-14 { grid-template-columns: repeat(5, 1fr); }
-            .video-grid.grid-16 { grid-template-columns: repeat(4, 1fr); }
-            .video-grid.grid-18 { grid-template-columns: repeat(6, 1fr); }
-            .video-grid.grid-20 { grid-template-columns: repeat(5, 1fr); }
-        }
-
-        @media (max-width: 480px) {
-            .header h1 {
-                font-size: 1.5rem;
-            }
-
-            .video-count-buttons {
-                grid-template-columns: repeat(3, 1fr);
-            }
-
-            .count-btn {
-                padding: 8px 4px;
-                font-size: 0.8rem;
-            }
-
-            .start-btn, .control-btn {
-                padding: 12px;
-                font-size: 0.9rem;
-            }
-        }
-
-        /* Cyberpunk glitch effect */
-        .glitch {
-            position: relative;
-        }
-
-        .glitch::before,
-        .glitch::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
+        .btn-main {
             width: 100%;
-            height: 100%;
+            margin-top: 30px;
+            padding: 22px;
+            border: none;
+            border-radius: 20px;
+            font-family: 'Syncopate', sans-serif;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            background: linear-gradient(90deg, #002222, var(--ghost-blue), #002222);
+            background-size: 200% auto;
+            box-shadow: 0 0 30px rgba(0, 242, 255, 0.5);
+            animation: moveShine 3s linear infinite;
         }
 
-        .glitch::before {
-            animation: glitch-1 0.5s infinite;
-            color: #ff00ff;
-            z-index: -1;
+        @keyframes moveShine { 0% { background-position: 0% 50%; } 100% { background-position: 200% 50%; } }
+
+        /* HISTORY SECTION */
+        .history-box {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 25px;
+            padding: 20px;
+            border: 1px solid rgba(0, 242, 255, 0.1);
         }
 
-        .glitch::after {
-            animation: glitch-2 0.5s infinite;
-            color: #00ffff;
-            z-index: -2;
+        .history-title {
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: var(--ghost-blue);
+            text-align: center;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            text-shadow: 0 0 5px var(--ghost-blue);
         }
 
-        @keyframes glitch-1 {
-            0%, 14%, 15%, 49%, 50%, 99%, 100% {
-                transform: translate(0);
-            }
-            15%, 49% {
-                transform: translate(-2px, 2px);
-            }
+        .history-item {
+            background: #000;
+            border: 1px solid rgba(0, 242, 255, 0.2);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
         }
 
-        @keyframes glitch-2 {
-            0%, 20%, 21%, 62%, 63%, 99%, 100% {
-                transform: translate(0);
-            }
-            21%, 62% {
-                transform: translate(2px, -2px);
-            }
+        .history-link {
+            color: var(--ghost-blue);
+            font-size: 0.75rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            max-width: 70%;
+            text-decoration: none;
         }
+
+        .mini-copy {
+            background: var(--ghost-blue);
+            color: #000;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.6rem;
+            font-weight: 900;
+            cursor: pointer;
+        }
+
+        /* UPLOADER ELEMENTS */
+        .result-box { display: none; margin-top: 30px; }
+        .link-bar {
+            background: #000;
+            padding: 18px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--ghost-blue);
+        }
+        #urlText { color: var(--ghost-blue); font-family: monospace; font-size: 0.8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .copy-btn { background: white; color: black; border: none; padding: 10px 15px; border-radius: 8px; font-weight: 900; cursor: pointer; }
+        .loader { display: none; margin: 20px auto; width: 40px; height: 40px; border: 4px solid rgba(0, 242, 255, 0.1); border-top: 4px solid var(--ghost-blue); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        footer { margin-top: 40px; padding: 25px; text-align: center; font-size: 0.7rem; color: var(--ghost-blue); letter-spacing: 8px; opacity: 0.5; }
     </style>
 </head>
 <body>
-    <div class="cyber-grid"></div>
-    
+
+    <canvas id="rainCanvas"></canvas>
+
     <div class="container">
-        <div class="header">
-            <h1 class="glitch" data-text="MULTI YOUTUBE PLAYER">MULTI YOUTUBE PLAYER</h1>
-            <p>ADVANCED MULTI-STREAM VIDEO INTERFACE</p>
-        </div>
+        <header>
+            <i class="fas fa-ghost ghost-icon"></i>
+            <div class="logo">GHOSTY</div>
+            <p style="font-size: 0.6rem; letter-spacing: 5px; margin-top: 10px; color: white;">PREMIUM SHINING LOG</p>
+        </header>
 
-        <div class="control-panel">
-            <div class="input-section">
-                <label for="youtube-url">ENTER YOUTUBE VIDEO LINK:</label>
-                <input type="text" id="youtube-url" class="url-input" placeholder="https://www.youtube.com/watch?v=..." />
-                <div id="error-message" class="error-message"></div>
+        <div class="premium-card">
+            <div class="upload-zone" id="dropArea">
+                <i class="fas fa-file-export" style="color: white; font-size: 2.5rem; margin-bottom: 15px; filter: drop-shadow(0 0 10px var(--ghost-blue));"></i>
+                <h2 class="shining-blue-text" id="fileLabel">Upload Image</h2>
+                <input type="file" id="fileInput" hidden accept="image/*">
             </div>
 
-            <div class="selector-section">
-                <label>SELECT VIDEO COUNTY:</label>
-                <div class="video-count-buttons">
-                    <button class="count-btn" data-count="4">4</button>
-                    <button class="count-btn" data-count="6">6</button>
-                    <button class="count-btn" data-count="8">8</button>
-                    <button class="count-btn" data-count="10">10</button>
-                    <button class="count-btn" data-count="12">12</button>
-                    <button class="count-btn" data-count="14">14</button>
-                    <button class="count-btn" data-count="16">16</button>
-                    <button class="count-btn" data-count="18">18</button>
-                    <button class="count-btn" data-count="20">20</button>
+            <div class="loader" id="spinner"></div>
+            <button class="btn-main" id="goBtn">GET LINK</button>
+
+            <div class="result-box" id="resultBox">
+                <div class="link-bar">
+                    <span id="urlText"></span>
+                    <button class="copy-btn" id="copyBtn">COPY</button>
                 </div>
-            </div>
-
-            <div class="button-group">
-                <button id="start-playing" class="start-btn">INITIALIZE STREAM</button>
-            </div>
-
-            <div id="video-controls" class="video-controls">
-                <button id="play-all" class="control-btn play-all">▶ PLAY ALL</button>
-                <button id="stop-all" class="control-btn stop-all">⏹ STOP ALL</button>
+                <button onclick="location.reload()" style="background:none; border:none; color:#444; width:100%; margin-top:20px; cursor:pointer; font-size:0.75rem;">NEW SUMMON</button>
             </div>
         </div>
 
-        <div id="video-grid" class="video-grid"></div>
-
-        <div class="footer">
-            <div class="branding">POWERED BY OLD-STUDIO</div>
-            <a href="https://whatsapp.com/channel/0029VavHzv259PwTIz1XxJ09" target="_blank" class="whatsapp-link">
-                📱 JOIN WHATSAPP CHANNEL
-            </a>
+        <div class="history-box">
+            <div class="history-title">Recent History</div>
+            <div id="historyList"></div>
+            <button onclick="clearHistory()" style="background:none; border:none; color:#ff4d4d; font-size:0.6rem; margin-top:10px; cursor:pointer; width:100%; letter-spacing: 2px;">WIPE ALL DATA</button>
         </div>
+
+        <footer>GHOSTY PREMIUM</footer>
     </div>
 
     <script>
-        let selectedCount = 4;
-        let currentVideoUrl = '';
-        let videoIframes = [];
+        const KEY = 'Ed019955ccdfc5952b136e449d727e0b';
+        const fileInput = document.getElementById('fileInput');
+        const historyList = document.getElementById('historyList');
 
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
-            initializeEventListeners();
-            selectDefaultCount();
-            addCyberEffects();
-        });
-
-        function initializeEventListeners() {
-            // Video count selection
-            document.querySelectorAll('.count-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    selectVideoCount(parseInt(this.dataset.count));
-                });
-            });
-
-            // Start playing button
-            document.getElementById('start-playing').addEventListener('click', startPlaying);
-
-            // Play all button
-            document.getElementById('play-all').addEventListener('click', playAllVideos);
-
-            // Stop all button
-            document.getElementById('stop-all').addEventListener('click', stopAllVideos);
-
-            // URL input validation
-            document.getElementById('youtube-url').addEventListener('input', function() {
-                hideError();
-                currentVideoUrl = this.value.trim();
-            });
-
-            // Enter key support
-            document.getElementById('youtube-url').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    startPlaying();
-                }
+        // RAIN BACKGROUND
+        const canvas = document.getElementById('rainCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+        const drops = Array(Math.floor(canvas.width / 16)).fill(1);
+        function draw() {
+            ctx.fillStyle = "rgba(0,0,0,0.15)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "#00f2ff"; ctx.font = "16px monospace";
+            drops.forEach((y, x) => {
+                ctx.fillText(Math.floor(Math.random()*2), x*16, y*16);
+                if(y*16 > canvas.height && Math.random() > 0.975) drops[x] = 0;
+                drops[x]++;
             });
         }
+        setInterval(draw, 35);
 
-        function selectDefaultCount() {
-            document.querySelector('.count-btn[data-count="4"]').classList.add('active');
+        // HISTORY LOGIC
+        function saveToHistory(url) {
+            let history = JSON.parse(localStorage.getItem('ghosty_history') || '[]');
+            history.unshift(url);
+            if(history.length > 5) history.pop();
+            localStorage.setItem('ghosty_history', JSON.stringify(history));
+            renderHistory();
         }
 
-        function selectVideoCount(count) {
-            selectedCount = count;
-            
-            // Update button states
-            document.querySelectorAll('.count-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            document.querySelector(`[data-count="${count}"]`).classList.add('active');
+        function renderHistory() {
+            let history = JSON.parse(localStorage.getItem('ghosty_history') || '[]');
+            historyList.innerHTML = history.map(url => `
+                <div class="history-item">
+                    <a href="${url}" target="_blank" class="history-link">${url}</a>
+                    <button class="mini-copy" onclick="copyText('${url}')">COPY</button>
+                </div>
+            `).join('');
         }
 
-        function startPlaying() {
-            const urlInput = document.getElementById('youtube-url');
-            const url = urlInput.value.trim();
-
-            if (!url) {
-                showError('Please enter a YouTube video URL');
-                return;
-            }
-
-            if (!isValidYouTubeUrl(url)) {
-                showError('Please enter a valid YouTube URL');
-                return;
-            }
-
-            hideError();
-            createVideoGrid(url, selectedCount);
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            alert("Copied to clipboard!");
         }
 
-        function isValidYouTubeUrl(url) {
-            const youtubeRegex = /^(https?:\/\/)?(www\.)?(youtube\.com\/(watch\?v=|embed\/)|youtu\.be\/)[\w-]+/;
-            return youtubeRegex.test(url);
+        function clearHistory() {
+            localStorage.removeItem('ghosty_history');
+            renderHistory();
         }
 
-        function extractVideoId(url) {
-            const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
-            const match = url.match(regex);
-            return match ? match[1] : null;
-        }
-
-        function createVideoGrid(url, count) {
-            const videoGrid = document.getElementById('video-grid');
-            const videoId = extractVideoId(url);
-
-            if (!videoId) {
-                showError('Could not extract video ID from URL');
-                return;
-            }
-
-            // Show loading with cyber theme
-            videoGrid.innerHTML = '<div class="loading"><div class="spinner"></div>Initializing Video Streams...</div>';
-
-            // Clear previous grid and set new grid class
-            setTimeout(() => {
-                videoGrid.innerHTML = '';
-                videoGrid.className = `video-grid grid-${count}`;
-                videoIframes = [];
-
-                // Create video containers
-                for (let i = 0; i < count; i++) {
-                    const videoContainer = document.createElement('div');
-                    videoContainer.className = 'video-container';
-                    
-                    const iframe = document.createElement('iframe');
-                    iframe.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=1&modestbranding=1&enablejsapi=1`;
-                    iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
-                    iframe.allowFullscreen = true;
-                    iframe.id = `video-${i}`;
-                    
-                    videoContainer.appendChild(iframe);
-                    videoGrid.appendChild(videoContainer);
-                    videoIframes.push(iframe);
+        // UPLOADER
+        document.getElementById('dropArea').onclick = () => fileInput.click();
+        document.getElementById('goBtn').onclick = async () => {
+            if(!fileInput.files[0]) return;
+            document.getElementById('goBtn').style.display='none';
+            document.getElementById('spinner').style.display='block';
+            const fd = new FormData(); fd.append('image', fileInput.files[0]);
+            try {
+                const res = await fetch(`https://api.imgbb.com/1/upload?key=${KEY}`, {method:'POST', body:fd});
+                const data = await res.json();
+                if(data.success) {
+                    const url = data.data.url;
+                    document.getElementById('urlText').innerText = url;
+                    document.getElementById('spinner').style.display='none';
+                    document.getElementById('resultBox').style.display='block';
+                    saveToHistory(url);
                 }
+            } catch(e) { location.reload(); }
+        };
 
-                // Show video controls
-                document.getElementById('video-controls').classList.add('show');
+        document.getElementById('copyBtn').onclick = () => {
+            copyText(document.getElementById('urlText').innerText);
+        };
 
-                // Scroll to video grid
-                videoGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 1000);
-        }
-
-        function playAllVideos() {
-            videoIframes.forEach((iframe, index) => {
-                try {
-                    // Send play command to iframe
-                    iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-                } catch (e) {
-                    console.log('Could not control video', index);
-                }
-            });
-            
-            // Visual feedback
-            const playBtn = document.getElementById('play-all');
-            playBtn.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                playBtn.style.transform = 'scale(1)';
-            }, 150);
-        }
-
-        function stopAllVideos() {
-            videoIframes.forEach((iframe, index) => {
-                try {
-                    // Send pause command to iframe
-                    iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-                } catch (e) {
-                    console.log('Could not control video', index);
-                }
-            });
-            
-            // Visual feedback
-            const stopBtn = document.getElementById('stop-all');
-            stopBtn.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                stopBtn.style.transform = 'scale(1)';
-            }, 150);
-        }
-
-        function showError(message) {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
-
-        function hideError() {
-            const errorDiv = document.getElementById('error-message');
-            errorDiv.style.display = 'none';
-        }
-
-        function addCyberEffects() {
-            // Add random glitch effects
-            setInterval(() => {
-                const elements = document.querySelectorAll('.count-btn, .start-btn, .control-btn');
-                const randomElement = elements[Math.floor(Math.random() * elements.length)];
-                if (randomElement && Math.random() < 0.1) {
-                    randomElement.style.animation = 'glitch-1 0.3s ease-in-out';
-                    setTimeout(() => {
-                        randomElement.style.animation = '';
-                    }, 300);
-                }
-            }, 2000);
-
-            // Add floating particles
-            createFloatingParticles();
-        }
-
-        function createFloatingParticles() {
-            for (let i = 0; i < 15; i++) {
-                const particle = document.createElement('div');
-                particle.style.cssText = `
-                    position: fixed;
-                    width: 2px;
-                    height: 2px;
-                    background: #00ffff;
-                    border-radius: 50%;
-                    pointer-events: none;
-                    z-index: -1;
-                    animation: float ${5 + Math.random() * 10}s linear infinite;
-                    left: ${Math.random() * 100}vw;
-                    top: ${Math.random() * 100}vh;
-                    opacity: ${0.3 + Math.random() * 0.7};
-                `;
-                document.body.appendChild(particle);
-            }
-
-            // Add CSS for floating animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes float {
-                    0% { transform: translateY(100vh) rotate(0deg); }
-                    100% { transform: translateY(-100vh) rotate(360deg); }
-                }
-            `;
-            document.head.appendChild(style);
-        }
+        window.onload = renderHistory;
     </script>
 </body>
 </html>
-
